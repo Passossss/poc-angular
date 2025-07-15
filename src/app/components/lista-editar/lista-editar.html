@@ -1,58 +1,71 @@
-<div class="mb-3 d-flex gap-2">
-  <button class="btn btn-danger" *ngIf="cliente" (click)="deletarCliente(cliente.id)" [disabled]="!cliente || !temId">Deletar</button>
-  <button class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
-  <button class="btn btn-success" (click)="confirmarEdicao()" [disabled]="!cliente">Confirmar</button>
-</div>
-<app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
-<form *ngIf="cliente" class="row g-3 mb-4">
-  <div class="col-md-6">
-    <label class="form-label">Nome:
-      <input class="form-control" [(ngModel)]="cliente.nome" name="nome" required>
-    </label>
+<div class="container mt-4">
+  <div class="mb-3 d-flex gap-2">
+    <button class="btn btn-danger" *ngIf="cliente" (click)="deletarCliente(cliente.id)" [disabled]="!cliente || !temId">Deletar</button>
+    <button class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+    <button class="btn btn-success" (click)="confirmarEdicao()" [disabled]="!cliente">Confirmar</button>
   </div>
-  <div class="col-md-6">
-    <label class="form-label">Data de Nascimento:
-      <input class="form-control" [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date" required>
-    </label>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Email:
-      <input class="form-control" [(ngModel)]="cliente.email" name="email" required>
-    </label>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Telefone:
-      <input class="form-control" [(ngModel)]="cliente.telefone" name="telefone" (ngModelChange)="cliente.telefone = formatarTelefone(cliente.telefone)" required>
-    </label>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">CPF:
-      <input class="form-control" [(ngModel)]="cliente.cpf" name="cpf" (ngModelChange)="cliente.cpf = formatarCPF(cliente.cpf)" required maxlength="14">
-    </label>
-  </div>
-</form>
+  <app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
 
-<h3>Pedidos do Cliente</h3>
-<table class="table table-striped table-bordered" *ngIf="pedidosCliente.length > 0">
-  <thead class="table-primary">
-    <tr>
-      <th>Data do Pedido</th>
-      <th>Descrição</th>
-      <th>Valor</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let pedido of pedidosCliente">
-      <td>{{ pedido.dataPedido | date:'dd/MM/yyyy' }}</td>
-      <td>{{ pedido.descricao }}</td>
-      <td>{{ pedido.valor | currency:'BRL' }}</td>
-      <td>
-        <button class="btn btn-warning btn-sm" (click)="editarPedido(pedido)">Editar</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<div *ngIf="pedidosCliente.length === 0">
-  <p>Nenhum pedido cadastrado para este cliente.</p>
+  <form *ngIf="cliente" class="row g-3 mb-4 needs-validation" novalidate>
+
+    <div class="col-md-6">
+      <label class="form-label">Nome:</label>
+      <div *ngIf="erroForm === 'Informe o nome.'" class="text-danger small mb-1">Informe o nome (sem números).</div>
+      <input class="form-control" [(ngModel)]="cliente.nome" name="nome" required pattern="^[^\d]*$" title="Não pode conter números">
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Data de Nascimento:</label>
+      <div *ngIf="erroForm === 'Informe a data de nascimento.'" class="text-danger small mb-1">Informe a data.</div>
+      <div *ngIf="erroForm === 'Data de nascimento não pode ser no futuro.'" class="text-danger small mb-1">Data inválida.</div>
+      <input class="form-control" [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Email:</label>
+      <div *ngIf="erroForm === 'Informe o email.'" class="text-danger small mb-1">Informe um email válido.</div>
+      <input class="form-control" [(ngModel)]="cliente.email" name="email" required type="email">
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Telefone:</label>
+      <div *ngIf="erroForm === 'Informe o telefone.'" class="text-danger small mb-1">Informe o telefone.</div>
+      <input class="form-control" [(ngModel)]="cliente.telefone" name="telefone"
+             (ngModelChange)="cliente.telefone = formatarTelefone(cliente.telefone)"
+             required pattern="[0-9()\-\s]*" inputmode="numeric">
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">CPF:</label>
+      <div *ngIf="erroForm === 'Informe o CPF.'" class="text-danger small mb-1">Informe o CPF.</div>
+      <input class="form-control" [(ngModel)]="cliente.cpf" name="cpf"
+             (ngModelChange)="cliente.cpf = formatarCPF(cliente.cpf)"
+             required maxlength="14" pattern="[0-9.\-]*" inputmode="numeric">
+    </div>
+  </form>
+
+  <h3>Pedidos do Cliente</h3>
+  <table class="table table-striped table-bordered" *ngIf="pedidosCliente.length > 0">
+    <thead class="table-primary">
+      <tr>
+        <th>Data do Pedido</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pedido of pedidosCliente">
+        <td>{{ pedido.dataPedido | date:'dd/MM/yyyy' }}</td>
+        <td>{{ pedido.descricao }}</td>
+        <td>{{ pedido.valor | currency:'BRL' }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" (click)="editarPedido(pedido)">Editar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="pedidosCliente.length === 0">
+    <p>Nenhum pedido cadastrado para este cliente.</p>
+  </div>
 </div>

@@ -13,13 +13,13 @@ import { AvisoComponent } from '../aviso/aviso.component';
   standalone: true,
   imports: [CommonModule, FormsModule, AvisoComponent],
   templateUrl: './lista-p-editar.html',
-  styleUrl: './lista-p-editar.css'
+  styleUrls: ['./lista-p-editar.css']
 })
 export class ListaPEditar {
   pedido: Pedido | null = null;
   clientes: Cliente[] = [];
   public temId = false;
-  public erroForm = '';
+
   avisoMsg = '';
   avisoTipo: 'erro' | 'sucesso' = 'erro';
   private _deleteConfirm = false;
@@ -47,6 +47,8 @@ export class ListaPEditar {
         },
         error: (err: any) => {
           console.error('Erro ao carregar pedido:', err);
+          this.avisoMsg = 'Erro ao carregar pedido.';
+          this.avisoTipo = 'erro';
         }
       });
     } else {
@@ -61,44 +63,60 @@ export class ListaPEditar {
   }
 
   validarForm(): boolean {
-    this.erroForm = '';
     if (!this.pedido) return false;
-    if (!this.pedido.clienteId) { this.erroForm = 'Selecione um cliente.'; return false; }
-    if (!this.pedido.dataPedido) { this.erroForm = 'Informe a data do pedido.'; return false; }
-    if (new Date(this.pedido.dataPedido) > new Date()) { this.erroForm = 'Data do pedido não pode ser no futuro.'; return false; }
-    if (!this.pedido.descricao) { this.erroForm = 'Informe a descrição.'; return false; }
-    if (!this.pedido.valor || this.pedido.valor < 0) { this.erroForm = 'Informe um valor válido.'; return false; }
+
+    if (!this.pedido.clienteId) {
+      this.avisoMsg = 'Selecione um cliente.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (!this.pedido.dataPedido) {
+      this.avisoMsg = 'Informe a data do pedido.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (new Date(this.pedido.dataPedido) > new Date()) {
+      this.avisoMsg = 'Data do pedido não pode ser no futuro.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (!this.pedido.descricao || this.pedido.descricao.trim().length === 0) {
+      this.avisoMsg = 'Informe a descrição.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (this.pedido.valor === null || this.pedido.valor === undefined || this.pedido.valor < 0) {
+      this.avisoMsg = 'Informe um valor válido.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+
+    this.avisoMsg = '';
     return true;
   }
 
   confirmarEdicao(): void {
     if (!this.validarForm()) return;
-    if (this.pedido) {
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        this.pedidoService.UpdatePedidoAsync(this.pedido.id, this.pedido).subscribe({
-          next: () => {
-            alert('Pedido atualizado com sucesso!');
-            this.router.navigate(['/pedidos']);
-          },
-          error: (err: any) => {
-            alert('Erro ao atualizar pedido!');
-            console.error('Erro ao atualizar pedido:', err);
+    if (!this.pedido) return;
+    const id = this.route.snapshot.paramMap.get('id');
+    const salvar = id
+      ? this.pedidoService.UpdatePedidoAsync(this.pedido.id, this.pedido)
+      : this.pedidoService.CreatePedidoAsync(this.pedido);
+    salvar.subscribe({
+      next: () => {
+        this.router.navigate(['/pedidos'], {
+          queryParams: {
+            msg: `Pedido ${id ? 'atualizado' : 'criado'} com sucesso!`,
+            tipo: 'sucesso'
           }
         });
-      } else {
-        this.pedidoService.CreatePedidoAsync(this.pedido).subscribe({
-          next: () => {
-            alert('Pedido criado com sucesso!');
-            this.router.navigate(['/pedidos']);
-          },
-          error: (err: any) => {
-            alert('Erro ao criar pedido!');
-            console.error('Erro ao criar pedido:', err);
-          }
-        });
+      },
+      error: err => {
+        this.avisoMsg = `Erro ao ${id ? 'atualizar' : 'criar'} pedido!`;
+        this.avisoTipo = 'erro';
+        console.error('Erro:', err);
       }
-    }
+    });
   }
 
   cancelarEdicao(): void {

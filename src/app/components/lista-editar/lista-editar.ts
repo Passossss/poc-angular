@@ -13,13 +13,13 @@ import { AvisoComponent } from '../aviso/aviso.component';
   standalone: true,
   imports: [CommonModule, FormsModule, AvisoComponent],
   templateUrl: './lista-editar.html',
-  styleUrl: './lista-editar.css'
+  styleUrls: ['./lista-editar.css']
 })
 export class ListaEditar {
   cliente: Cliente | null = null;
   pedidosCliente: Pedido[] = [];
   temId = false;
-  erroForm = '';
+
   avisoMsg = '';
   avisoTipo: 'erro' | 'sucesso' = 'erro';
 
@@ -66,22 +66,55 @@ export class ListaEditar {
     });
   }
 
-  get pedidosDoClienteSelecionado(): Pedido[] {
-    return this.pedidosCliente ?? [];
-  }
-
   validarForm(): boolean {
-    this.erroForm = '';
     if (!this.cliente) return false;
 
-    if (!this.cliente.nome) { this.erroForm = 'Informe o nome.'; return false; }
-    if (!this.cliente.dataNascimento) { this.erroForm = 'Informe a data de nascimento.'; return false; }
-    if (new Date(this.cliente.dataNascimento) > new Date()) { this.erroForm = 'Data de nascimento não pode ser no futuro.'; return false; }
-    if (!this.cliente.email) { this.erroForm = 'Informe o email.'; return false; }
-    if (!this.cliente.telefone) { this.erroForm = 'Informe o telefone.'; return false; }
-    if (!this.cliente.cpf) { this.erroForm = 'Informe o CPF.'; return false; }
+    // Verificar campos
+    if (!this.cliente.nome || /\d/.test(this.cliente.nome)) {
+      this.avisoMsg = 'Nome inválido: não pode conter números.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (!this.cliente.dataNascimento) {
+      this.avisoMsg = 'Data de nascimento é obrigatória.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (new Date(this.cliente.dataNascimento) > new Date()) {
+      this.avisoMsg = 'Data de nascimento não pode ser no futuro.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (!this.cliente.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.cliente.email)) {
+      this.avisoMsg = 'Email inválido.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (!this.cliente.telefone || !/^\(\d{2}\) \d{4,5}-\d{4}$/.test(this.cliente.telefone)) {
+      this.avisoMsg = 'Telefone inválido. Use formato (XX) XXXX-XXXX ou (XX) XXXXX-XXXX.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
+    if (!this.cliente.cpf || !/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(this.cliente.cpf)) {
+      this.avisoMsg = 'CPF inválido. Use formato 000.000.000-00.';
+      this.avisoTipo = 'erro';
+      return false;
+    }
 
+    this.avisoMsg = '';
     return true;
+  }
+
+  onCPFInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9.-]/g, '');
+    this.cliente!.cpf = input.value;
+  }
+
+  onTelefoneInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^\d()\s-]/g, '');
+    this.cliente!.telefone = input.value;
   }
 
   formatarCPF(cpf: string): string {
@@ -107,20 +140,24 @@ export class ListaEditar {
 
   confirmarEdicao(): void {
     if (!this.validarForm()) return;
-
     if (!this.cliente) return;
-
+    const clienteEnviar = {
+      ...this.cliente,
+      telefone: this.cliente.telefone.replace(/\D/g, ''),
+      cpf: this.cliente.cpf.replace(/\D/g, '')
+    };
     const id = this.route.snapshot.paramMap.get('id');
-
     const salvar = id
-      ? this.clienteService.UpdateClienteAsync(this.cliente)
-      : this.clienteService.CreateClienteAsync(this.cliente);
-
+      ? this.clienteService.UpdateClienteAsync(clienteEnviar)
+      : this.clienteService.CreateClienteAsync(clienteEnviar);
     salvar.subscribe({
       next: () => {
-        this.avisoMsg = `Cliente ${id ? 'atualizado' : 'criado'} com sucesso!`;
-        this.avisoTipo = 'sucesso';
-        setTimeout(() => this.router.navigate(['/clientes']), 1500);
+        this.router.navigate(['/clientes'], {
+          queryParams: {
+            msg: `Cliente ${id ? 'atualizado' : 'criado'} com sucesso!`,
+            tipo: 'sucesso'
+          }
+        });
       },
       error: err => {
         this.avisoMsg = `Erro ao ${id ? 'atualizar' : 'criar'} cliente!`;
@@ -135,8 +172,6 @@ export class ListaEditar {
   }
 
   deletarCliente(id: string): void {
-    this.avisoMsg = 'Clique novamente para confirmar a exclusão.';
-    this.avisoTipo = 'erro';
     if (this._deleteConfirm) {
       this.clienteService.DeleteClienteAsync(id).subscribe({
         next: () => {
@@ -152,6 +187,8 @@ export class ListaEditar {
       });
       this._deleteConfirm = false;
     } else {
+      this.avisoMsg = 'Clique novamente para confirmar a exclusão.';
+      this.avisoTipo = 'erro';
       this._deleteConfirm = true;
       setTimeout(() => this._deleteConfirm = false, 2000);
     }

@@ -1,31 +1,36 @@
-<div class="mb-3 d-flex gap-2">
-  <button class="btn btn-danger" *ngIf="pedido" (click)="deletarPedido()" [disabled]="!pedido || !temId">Deletar</button>
-  <button class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
-  <button class="btn btn-success" (click)="confirmarEdicao()" [disabled]="!pedido">Confirmar</button>
-</div>
-<app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
-<form *ngIf="pedido" class="row g-3 mb-4">
-  <div class="col-md-6">
-    <label class="form-label">Cliente:
-      <select class="form-select" [(ngModel)]="pedido.clienteId" name="clienteId" required>
-        <option value="">Selecione...</option>
-        <option *ngFor="let c of clientes" [value]="c.id">{{c.nome}}</option>
-      </select>
-    </label>
+<div class="container mt-4">
+    <div class="mb-3 d-flex gap-2">
+      <button class="btn btn-danger" *ngIf="pedido && temId" (click)="deletarPedido()" [disabled]="!pedido || !temId">Deletar</button>
+      <button class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+      <button class="btn btn-success" (click)="confirmarEdicao()" [disabled]="!pedido || !validarForm()">Confirmar</button>
+    </div>
+  
+    <app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
+  
+    <form *ngIf="pedido" class="row g-3 mb-4 needs-validation" novalidate>
+  
+      <div class="col-md-6">
+        <label class="form-label">Cliente:</label>
+        <select class="form-select" [(ngModel)]="pedido.clienteId" name="clienteId" required (change)="validarForm()">
+          <option value="">Selecione...</option>
+          <option *ngFor="let c of clientes" [value]="c.id">{{ c.nome }}</option>
+        </select>
+      </div>
+  
+      <div class="col-md-6">
+        <label class="form-label">Data do Pedido:</label>
+        <input type="date" class="form-control" [(ngModel)]="pedido.dataPedido" name="dataPedido" required (change)="validarForm()">
+      </div>
+  
+      <div class="col-md-6">
+        <label class="form-label">Descrição:</label>
+        <input type="text" class="form-control" [(ngModel)]="pedido.descricao" name="descricao" required (input)="validarForm()">
+      </div>
+  
+      <div class="col-md-6">
+        <label class="form-label">Valor:</label>
+        <input type="number" step="0.01" class="form-control" [(ngModel)]="pedido.valor" name="valor" required (input)="validarForm()">
+      </div>
+  
+    </form>
   </div>
-  <div class="col-md-6">
-    <label class="form-label">Data do Pedido:
-      <input class="form-control" [(ngModel)]="pedido.dataPedido" name="dataPedido" type="date" required>
-    </label>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Descrição:
-      <input class="form-control" [(ngModel)]="pedido.descricao" name="descricao" required>
-    </label>
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Valor:
-      <input class="form-control" [(ngModel)]="pedido.valor" name="valor" type="number" step="0.01" required>
-    </label>
-  </div>
-</form>
