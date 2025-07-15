@@ -1,21 +1,35 @@
 <h2>Lista de Pedidos</h2>
 
-<button class="novo-pedido-btn" (click)="novoPedido()">Novo Pedido</button>
+<button class="btn btn-primary mb-3" (click)="novoPedido()">Novo Pedido</button>
+
+<app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
 
 <div *ngIf="pedidos.length === 0">
   <p>Nenhum pedido cadastrado ainda.</p>
 </div>
 
-<ul *ngIf="pedidos.length > 0">
-  <li *ngFor="let pedido of pedidos">
-    ID: {{ pedido.id }} <br />
-    Cliente ID: {{ pedido.clienteId }} <br />
-    Data do Pedido: {{ pedido.dataPedido | date:'dd/MM/yyyy' }} <br />
-    Descrição: {{ pedido.descricao }} <br />
-    Valor: {{ pedido.valor | currency:'BRL' }}
-    <br />
-    <button (click)="deletarPedido(pedido)">Deletar</button>
-    <button (click)="editarPedido(pedido)">Editar</button>
-    <hr />
-  </li>
-</ul>
+<table class="table table-striped table-bordered" *ngIf="pedidos.length > 0">
+  <thead class="table-primary">
+    <tr>
+      <th>ID</th>
+      <th>Cliente ID</th>
+      <th>Data do Pedido</th>
+      <th>Descrição</th>
+      <th>Valor</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let pedido of pedidos">
+      <td>{{ pedido.id }}</td>
+      <td>{{ pedido.clienteId }}</td>
+      <td>{{ pedido.dataPedido | date:'dd/MM/yyyy' }}</td>
+      <td>{{ pedido.descricao }}</td>
+      <td>{{ pedido.valor | currency:'BRL' }}</td>
+      <td>
+        <button class="btn btn-warning btn-sm me-1" (click)="editarPedido(pedido)">Editar</button>
+        <button class="btn btn-danger btn-sm" (click)="deletarPedido(pedido)">Deletar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

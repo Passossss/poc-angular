@@ -3,16 +3,20 @@ import { Pedido } from '../../models/pedido.model';
 import { PedidoService } from '../../service/pedido.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AvisoComponent } from '../aviso/aviso.component';
 
 @Component({
   selector: 'app-lista-pedidos',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AvisoComponent],
   templateUrl: './lista-pedidos.html',
   styleUrl: './lista-pedidos.css'
 })
 export class ListaPedidos {
   pedidos: Pedido[] = [];
+  avisoMsg = '';
+  avisoTipo: 'erro' | 'sucesso' = 'erro';
+  private _deleteConfirmId: string | null = null;
 
   constructor(private pedidoService: PedidoService, private router: Router) {
     this.carregarPedidos();
@@ -25,17 +29,26 @@ export class ListaPedidos {
   }
 
   deletarPedido(pedido: Pedido): void {
-    if (confirm('Tem certeza que deseja deletar este pedido?')) {
+    if (this._deleteConfirmId === pedido.id) {
       this.pedidoService.DeletePedidoAsync(pedido.id).subscribe({
         next: () => {
-          alert('Pedido deletado com sucesso!');
+          this.avisoMsg = 'Pedido deletado com sucesso!';
+          this.avisoTipo = 'sucesso';
           this.carregarPedidos();
+          setTimeout(() => this.avisoMsg = '', 2000);
         },
         error: (erro) => {
-          alert('Erro ao deletar pedido!');
+          this.avisoMsg = 'Erro ao deletar pedido!';
+          this.avisoTipo = 'erro';
           console.error('Erro ao deletar pedido:', erro);
         }
       });
+      this._deleteConfirmId = null;
+    } else {
+      this.avisoMsg = 'Clique novamente para confirmar a exclusão.';
+      this.avisoTipo = 'erro';
+      this._deleteConfirmId = pedido.id;
+      setTimeout(() => this._deleteConfirmId = null, 2000);
     }
   }
 

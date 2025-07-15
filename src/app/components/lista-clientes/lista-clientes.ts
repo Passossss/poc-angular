@@ -52,4 +52,7 @@ editarCliente(id: string) {
     this.router.navigate(['/criar']);
   }
   
+  selecionarCliente(cliente: Cliente) {
+    this.router.navigate(['/editar', cliente.id]);
+  }
 }

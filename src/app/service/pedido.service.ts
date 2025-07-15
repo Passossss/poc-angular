@@ -33,4 +33,8 @@ export class PedidoService {
   DeletePedidoAsync(id: string): Observable<Pedido[]> {
     return this.http.delete<Pedido[]>(`${this.apiUrl}/${id}`);
   }
+
+  GetPedidosClienteAsync(clienteId: string): Observable<Pedido[]> {
+    return this.http.get<Pedido[]>(`${environment.apiUrl}/clientes/${clienteId}/pedidos`);
+  }
 }

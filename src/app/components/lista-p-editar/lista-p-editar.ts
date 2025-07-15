@@ -6,11 +6,12 @@ import { Cliente } from '../../models/cliente.model';
 import { ClienteService } from '../../service/cliente.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AvisoComponent } from '../aviso/aviso.component';
 
 @Component({
   selector: 'app-lista-p-editar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AvisoComponent],
   templateUrl: './lista-p-editar.html',
   styleUrl: './lista-p-editar.css'
 })
@@ -19,6 +20,9 @@ export class ListaPEditar {
   clientes: Cliente[] = [];
   public temId = false;
   public erroForm = '';
+  avisoMsg = '';
+  avisoTipo: 'erro' | 'sucesso' = 'erro';
+  private _deleteConfirm = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -102,17 +106,27 @@ export class ListaPEditar {
   }
 
   deletarPedido(): void {
-    if (this.pedido && this.temId && confirm('Tem certeza que deseja deletar este pedido?')) {
-      this.pedidoService.DeletePedidoAsync(this.pedido.id).subscribe({
-        next: () => {
-          alert('Pedido deletado com sucesso!');
-          this.router.navigate(['/pedidos']);
-        },
-        error: (err: any) => {
-          alert('Erro ao deletar pedido!');
-          console.error('Erro ao deletar pedido:', err);
-        }
-      });
+    if (this._deleteConfirm) {
+      if (this.pedido && this.temId) {
+        this.pedidoService.DeletePedidoAsync(this.pedido.id).subscribe({
+          next: () => {
+            this.avisoMsg = 'Pedido deletado com sucesso!';
+            this.avisoTipo = 'sucesso';
+            setTimeout(() => this.router.navigate(['/pedidos']), 1500);
+          },
+          error: (err: any) => {
+            this.avisoMsg = 'Erro ao deletar pedido!';
+            this.avisoTipo = 'erro';
+            console.error('Erro ao deletar pedido:', err);
+          }
+        });
+      }
+      this._deleteConfirm = false;
+    } else {
+      this.avisoMsg = 'Clique novamente para confirmar a exclusão.';
+      this.avisoTipo = 'erro';
+      this._deleteConfirm = true;
+      setTimeout(() => this._deleteConfirm = false, 2000);
     }
   }
 }

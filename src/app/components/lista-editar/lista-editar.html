@@ -1,25 +1,58 @@
-<div class="botoes-edicao">
-  <button *ngIf="cliente" (click)="deletarCliente(cliente.id)" [disabled]="!cliente || !temId">Deletar</button>
-  <button (click)="cancelarEdicao()">Cancelar</button>
-  <button (click)="confirmarEdicao()" [disabled]="!cliente">Confirmar</button>
+<div class="mb-3 d-flex gap-2">
+  <button class="btn btn-danger" *ngIf="cliente" (click)="deletarCliente(cliente.id)" [disabled]="!cliente || !temId">Deletar</button>
+  <button class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+  <button class="btn btn-success" (click)="confirmarEdicao()" [disabled]="!cliente">Confirmar</button>
 </div>
-<div *ngIf="erroForm" class="erro-form">{{ erroForm }}</div>
-<form *ngIf="cliente">
-  <div class="form-campos">
-    <label>Nome:
-      <input [(ngModel)]="cliente.nome" name="nome" required>
+<app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
+<form *ngIf="cliente" class="row g-3 mb-4">
+  <div class="col-md-6">
+    <label class="form-label">Nome:
+      <input class="form-control" [(ngModel)]="cliente.nome" name="nome" required>
     </label>
-    <label>Data de Nascimento:
-      <input [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date" required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Data de Nascimento:
+      <input class="form-control" [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date" required>
     </label>
-    <label>Email:
-      <input [(ngModel)]="cliente.email" name="email" required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Email:
+      <input class="form-control" [(ngModel)]="cliente.email" name="email" required>
     </label>
-    <label>Telefone:
-      <input [(ngModel)]="cliente.telefone" name="telefone" (ngModelChange)="cliente.telefone = formatarTelefone(cliente.telefone)" required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Telefone:
+      <input class="form-control" [(ngModel)]="cliente.telefone" name="telefone" (ngModelChange)="cliente.telefone = formatarTelefone(cliente.telefone)" required>
     </label>
-    <label>CPF:
-      <input [(ngModel)]="cliente.cpf" name="cpf" (ngModelChange)="cliente.cpf = formatarCPF(cliente.cpf)" required maxlength="14">
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">CPF:
+      <input class="form-control" [(ngModel)]="cliente.cpf" name="cpf" (ngModelChange)="cliente.cpf = formatarCPF(cliente.cpf)" required maxlength="14">
     </label>
   </div>
 </form>
+
+<h3>Pedidos do Cliente</h3>
+<table class="table table-striped table-bordered" *ngIf="pedidosCliente.length > 0">
+  <thead class="table-primary">
+    <tr>
+      <th>Data do Pedido</th>
+      <th>Descrição</th>
+      <th>Valor</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let pedido of pedidosCliente">
+      <td>{{ pedido.dataPedido | date:'dd/MM/yyyy' }}</td>
+      <td>{{ pedido.descricao }}</td>
+      <td>{{ pedido.valor | currency:'BRL' }}</td>
+      <td>
+        <button class="btn btn-warning btn-sm" (click)="editarPedido(pedido)">Editar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div *ngIf="pedidosCliente.length === 0">
+  <p>Nenhum pedido cadastrado para este cliente.</p>
+</div>
