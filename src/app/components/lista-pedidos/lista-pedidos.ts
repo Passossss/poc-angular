@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Pedido } from '../../models/pedido.model';
 import { PedidoService } from '../../service/pedido.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { AvisoComponent } from '../aviso/aviso.component';
 
 @Component({
@@ -15,11 +15,18 @@ import { AvisoComponent } from '../aviso/aviso.component';
 export class ListaPedidos {
   pedidos: Pedido[] = [];
   avisoMsg = '';
-  avisoTipo: 'erro' | 'sucesso' = 'erro';
+  avisoTipo: 'erro' | 'sucesso' = 'sucesso';
   private _deleteConfirmId: string | null = null;
 
-  constructor(private pedidoService: PedidoService, private router: Router) {
+  constructor(private pedidoService: PedidoService, private router: Router, private route: ActivatedRoute) {
     this.carregarPedidos();
+    this.route.queryParams.subscribe(params => {
+      if (params['msg']) {
+        this.avisoMsg = params['msg'];
+        this.avisoTipo = params['tipo'] || 'sucesso';
+        setTimeout(() => this.avisoMsg = '', 3000);
+      }
+    });
   }
 
   carregarPedidos() {

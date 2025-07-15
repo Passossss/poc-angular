@@ -10,26 +10,21 @@
 
     <div class="col-md-6">
       <label class="form-label">Nome:</label>
-      <div *ngIf="erroForm === 'Informe o nome.'" class="text-danger small mb-1">Informe o nome (sem números).</div>
       <input class="form-control" [(ngModel)]="cliente.nome" name="nome" required pattern="^[^\d]*$" title="Não pode conter números">
     </div>
 
     <div class="col-md-6">
       <label class="form-label">Data de Nascimento:</label>
-      <div *ngIf="erroForm === 'Informe a data de nascimento.'" class="text-danger small mb-1">Informe a data.</div>
-      <div *ngIf="erroForm === 'Data de nascimento não pode ser no futuro.'" class="text-danger small mb-1">Data inválida.</div>
       <input class="form-control" [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date" required>
     </div>
 
     <div class="col-md-6">
       <label class="form-label">Email:</label>
-      <div *ngIf="erroForm === 'Informe o email.'" class="text-danger small mb-1">Informe um email válido.</div>
       <input class="form-control" [(ngModel)]="cliente.email" name="email" required type="email">
     </div>
 
     <div class="col-md-6">
       <label class="form-label">Telefone:</label>
-      <div *ngIf="erroForm === 'Informe o telefone.'" class="text-danger small mb-1">Informe o telefone.</div>
       <input class="form-control" [(ngModel)]="cliente.telefone" name="telefone"
              (ngModelChange)="cliente.telefone = formatarTelefone(cliente.telefone)"
              required pattern="[0-9()\-\s]*" inputmode="numeric">
@@ -37,7 +32,6 @@
 
     <div class="col-md-6">
       <label class="form-label">CPF:</label>
-      <div *ngIf="erroForm === 'Informe o CPF.'" class="text-danger small mb-1">Informe o CPF.</div>
       <input class="form-control" [(ngModel)]="cliente.cpf" name="cpf"
              (ngModelChange)="cliente.cpf = formatarCPF(cliente.cpf)"
              required maxlength="14" pattern="[0-9.\-]*" inputmode="numeric">

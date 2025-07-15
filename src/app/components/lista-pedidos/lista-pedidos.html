@@ -1,9 +1,9 @@
 <div class="container mt-4">
+  <app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
+
   <h2>Lista de Pedidos</h2>
 
   <button class="btn btn-primary mb-3" (click)="novoPedido()">Novo Pedido</button>
-
-  <app-aviso *ngIf="avisoMsg" [mensagem]="avisoMsg" [tipo]="avisoTipo"></app-aviso>
 
   <div *ngIf="pedidos.length === 0">
     <p>Nenhum pedido cadastrado ainda.</p>
