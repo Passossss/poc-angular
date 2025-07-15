@@ -1,0 +1,25 @@
+<div class="botoes-edicao">
+  <button *ngIf="cliente" (click)="deletarCliente(cliente.id)" [disabled]="!cliente || !temId">Deletar</button>
+  <button (click)="cancelarEdicao()">Cancelar</button>
+  <button (click)="confirmarEdicao()" [disabled]="!cliente">Confirmar</button>
+</div>
+
+<form *ngIf="cliente">
+  <div class="form-campos">
+    <label>Nome:
+      <input [(ngModel)]="cliente.nome" name="nome">
+    </label>
+    <label>Data de Nascimento:
+      <input [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date">
+    </label>
+    <label>Email:
+      <input [(ngModel)]="cliente.email" name="email">
+    </label>
+    <label>Telefone:
+      <input [(ngModel)]="cliente.telefone" name="telefone">
+    </label>
+    <label>CPF:
+      <input [(ngModel)]="cliente.cpf" name="cpf">
+    </label>
+  </div>
+</form>

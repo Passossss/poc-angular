@@ -1,19 +1,21 @@
 <h2>Lista de Clientes</h2>
 
+<button class="novo-cliente-btn" (click)="novoCliente()">Criar Cliente</button>
+
 <div *ngIf="clientes.length === 0">
   <p>Nenhum cliente cadastrado ainda.</p>
 </div>
 
 <ul *ngIf="clientes.length > 0">
   <li *ngFor="let cliente of clientes">
-    ID: {{ cliente.id }} <br />
     Nome: {{ cliente.nome }} <br />
     Email: {{ cliente.email }} <br />
     Telefone: {{ cliente.telefone }} <br />
     CPF: {{ cliente.cpf }} <br />
-    Data de Nascimento: {{ cliente.dataNascimento | date:'shortDate' }}
+    Data de Nascimento: {{ cliente.dataNascimento | date:'dd/MM/yyyy' }}
     <br />
     <button (click)="deletarCliente(cliente.id)">Deletar</button>
+    <button (click)="Edicao(cliente)">Editar</button>
     <hr />
   </li>
 </ul>

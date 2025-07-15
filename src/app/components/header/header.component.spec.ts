@@ -2,26 +2,32 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from '../../models/cliente.model';
 import { ClienteService } from '../../service/cliente.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-lista-clientes',
+  selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './lista-clientes.html',
-  styleUrl: './lista-clientes.css'
+  imports: [CommonModule],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.css'
 })
-export class ListaClientesComponent {
+export class ListaClientesComponent implements OnInit {
   clientes: Cliente[] = [];
-  clienteEditando: Cliente | null = null;
 
-  constructor(private clienteService: ClienteService, private router: Router) {
+  constructor(private clienteService: ClienteService) { }
+
+  ngOnInit(): void {
     this.carregarClientes();
-   }
+  }
 
-   carregarClientes() {
+  carregarClientes(): void {
     this.clienteService.GetClientesAsync().subscribe({
-      next: (data) => this.clientes = data
+      next: (dados) => {
+        this.clientes = dados;
+        console.log('Clientes carregados:', this.clientes);
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar clientes:', erro);
+      }
     });
   }
 
@@ -38,18 +44,4 @@ export class ListaClientesComponent {
       });
     }
   }
-editarCliente(id: string) {
-  window.location.href = `/lista-editar.html?id=${id}`;
-}
-  cancelarEdicao() {
-    this.clienteEditando = null;
-  }
-  Edicao(cliente: Cliente) {
-    this.router.navigate(['/editar', cliente.id]);
-  }
-
-  novoCliente() {
-    this.router.navigate(['/criar']);
-  }
-  
 }
