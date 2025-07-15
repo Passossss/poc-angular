@@ -1,0 +1,38 @@
+.inicio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  background: linear-gradient(to bottom, #e0f7fa 0%, #fff 100%);
+  padding: 40px 0;
+}
+
+.inicio-titulo {
+  font-size: 2.5rem;
+  color: #1797a6;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.inicio-subtitulo {
+  font-size: 1.2rem;
+  color: #174449;
+  margin-bottom: 32px;
+}
+
+.inicio-btn {
+  padding: 12px 32px;
+  background: #3acbdb;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: background 0.2s;
+}
+
+.inicio-btn:hover {
+  background: #1797a6;
+}

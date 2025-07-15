@@ -1,0 +1,26 @@
+.footer-fixo {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  background: #3acbdb;
+  color: #fff;
+  padding: 12px;
+  text-align: center;
+  z-index: 100;
+  border: none;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  min-height: 100vh;
+}
+
+#root, app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,1 +1,21 @@
-<p>lista-pedidos works!</p>
+<h2>Lista de Pedidos</h2>
+
+<button class="novo-pedido-btn" (click)="novoPedido()">Novo Pedido</button>
+
+<div *ngIf="pedidos.length === 0">
+  <p>Nenhum pedido cadastrado ainda.</p>
+</div>
+
+<ul *ngIf="pedidos.length > 0">
+  <li *ngFor="let pedido of pedidos">
+    ID: {{ pedido.id }} <br />
+    Cliente ID: {{ pedido.clienteId }} <br />
+    Data do Pedido: {{ pedido.dataPedido | date:'dd/MM/yyyy' }} <br />
+    Descrição: {{ pedido.descricao }} <br />
+    Valor: {{ pedido.valor | currency:'BRL' }}
+    <br />
+    <button (click)="deletarPedido(pedido)">Deletar</button>
+    <button (click)="editarPedido(pedido)">Editar</button>
+    <hr />
+  </li>
+</ul>

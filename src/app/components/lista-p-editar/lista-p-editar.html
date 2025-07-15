@@ -1,1 +1,22 @@
-<p>lista-p-editar works!</p>
+<div class="botoes-edicao">
+  <button *ngIf="pedido" (click)="deletarPedido()" [disabled]="!pedido || !temId">Deletar</button>
+  <button (click)="cancelarEdicao()">Cancelar</button>
+  <button (click)="confirmarEdicao()" [disabled]="!pedido">Confirmar</button>
+</div>
+
+<form *ngIf="pedido">
+  <div class="form-campos">
+    <label>Cliente ID:
+      <input [(ngModel)]="pedido.clienteId" name="clienteId">
+    </label>
+    <label>Data do Pedido:
+      <input [(ngModel)]="pedido.dataPedido" name="dataPedido" type="date">
+    </label>
+    <label>Descrição:
+      <input [(ngModel)]="pedido.descricao" name="descricao">
+    </label>
+    <label>Valor:
+      <input [(ngModel)]="pedido.valor" name="valor" type="number" step="0.01">
+    </label>
+  </div>
+</form>
