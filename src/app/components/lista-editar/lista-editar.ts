@@ -22,6 +22,7 @@ export class ListaEditar {
 
   avisoMsg = '';
   avisoTipo: 'erro' | 'sucesso' = 'erro';
+  deleteConfirmClienteId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -68,6 +69,7 @@ export class ListaEditar {
 
   validarForm(): boolean {
     if (!this.cliente) return false;
+    if (this.deleteConfirmClienteId) return false; // Bloqueia validação se aguardando confirmação de exclusão
 
     // Verificar campos
     if (!this.cliente.nome || /\d/.test(this.cliente.nome)) {
@@ -139,6 +141,7 @@ export class ListaEditar {
   }
 
   confirmarEdicao(): void {
+    if (this.deleteConfirmClienteId) return; // Bloqueia edição se aguardando confirmação de exclusão
     if (!this.validarForm()) return;
     if (!this.cliente) return;
     const clienteEnviar = {
@@ -172,12 +175,21 @@ export class ListaEditar {
   }
 
   deletarCliente(id: string): void {
-    if (this._deleteConfirm) {
-      this.clienteService.DeleteClienteAsync(id).subscribe({
+    this.deleteConfirmClienteId = id;
+    this.avisoMsg = 'Tem certeza que deseja deletar este cliente?';
+    this.avisoTipo = 'erro';
+  }
+
+  confirmarDeleteCliente(): void {
+    if (this.deleteConfirmClienteId) {
+      this.clienteService.DeleteClienteAsync(this.deleteConfirmClienteId).subscribe({
         next: () => {
-          this.avisoMsg = 'Cliente deletado com sucesso!';
-          this.avisoTipo = 'sucesso';
-          setTimeout(() => this.router.navigate(['/clientes']), 1500);
+          this.router.navigate(['/clientes'], {
+            queryParams: {
+              msg: 'Cliente deletado com sucesso!',
+              tipo: 'sucesso'
+            }
+          });
         },
         error: err => {
           this.avisoMsg = 'Erro ao deletar cliente!';
@@ -185,13 +197,13 @@ export class ListaEditar {
           console.error('Erro ao deletar cliente:', err);
         }
       });
-      this._deleteConfirm = false;
-    } else {
-      this.avisoMsg = 'Clique novamente para confirmar a exclusão.';
-      this.avisoTipo = 'erro';
-      this._deleteConfirm = true;
-      setTimeout(() => this._deleteConfirm = false, 2000);
+      this.deleteConfirmClienteId = null;
     }
+  }
+
+  cancelarDeleteCliente(): void {
+    this.deleteConfirmClienteId = null;
+    this.avisoMsg = '';
   }
   private _deleteConfirm = false;
 

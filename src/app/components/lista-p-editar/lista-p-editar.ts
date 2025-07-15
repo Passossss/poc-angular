@@ -22,7 +22,7 @@ export class ListaPEditar {
 
   avisoMsg = '';
   avisoTipo: 'erro' | 'sucesso' = 'erro';
-  private _deleteConfirm = false;
+  deleteConfirmPedidoId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -64,7 +64,7 @@ export class ListaPEditar {
 
   validarForm(): boolean {
     if (!this.pedido) return false;
-
+    if (this.deleteConfirmPedidoId) return false; 
     if (!this.pedido.clienteId) {
       this.avisoMsg = 'Selecione um cliente.';
       this.avisoTipo = 'erro';
@@ -96,6 +96,7 @@ export class ListaPEditar {
   }
 
   confirmarEdicao(): void {
+    if (this.deleteConfirmPedidoId) return;
     if (!this.validarForm()) return;
     if (!this.pedido) return;
     const id = this.route.snapshot.paramMap.get('id');
@@ -124,27 +125,36 @@ export class ListaPEditar {
   }
 
   deletarPedido(): void {
-    if (this._deleteConfirm) {
-      if (this.pedido && this.temId) {
-        this.pedidoService.DeletePedidoAsync(this.pedido.id).subscribe({
-          next: () => {
-            this.avisoMsg = 'Pedido deletado com sucesso!';
-            this.avisoTipo = 'sucesso';
-            setTimeout(() => this.router.navigate(['/pedidos']), 1500);
-          },
-          error: (err: any) => {
-            this.avisoMsg = 'Erro ao deletar pedido!';
-            this.avisoTipo = 'erro';
-            console.error('Erro ao deletar pedido:', err);
-          }
-        });
-      }
-      this._deleteConfirm = false;
-    } else {
-      this.avisoMsg = 'Clique novamente para confirmar a exclusão.';
+    if (this.pedido && this.temId) {
+      this.deleteConfirmPedidoId = this.pedido.id;
+      this.avisoMsg = 'Tem certeza que deseja deletar este pedido?';
       this.avisoTipo = 'erro';
-      this._deleteConfirm = true;
-      setTimeout(() => this._deleteConfirm = false, 2000);
     }
+  }
+
+  confirmarDeletePedido(): void {
+    if (this.deleteConfirmPedidoId) {
+      this.pedidoService.DeletePedidoAsync(this.deleteConfirmPedidoId).subscribe({
+        next: () => {
+          this.router.navigate(['/pedidos'], {
+            queryParams: {
+              msg: 'Pedido deletado com sucesso!',
+              tipo: 'sucesso'
+            }
+          });
+        },
+        error: (err: any) => {
+          this.avisoMsg = 'Erro ao deletar pedido!';
+          this.avisoTipo = 'erro';
+          console.error('Erro ao deletar pedido:', err);
+        }
+      });
+      this.deleteConfirmPedidoId = null;
+    }
+  }
+
+  cancelarDeletePedido(): void {
+    this.deleteConfirmPedidoId = null;
+    this.avisoMsg = '';
   }
 }

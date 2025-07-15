@@ -8,6 +8,9 @@ import { CommonModule } from '@angular/common';
   template: `
     <div *ngIf="mensagem" [ngClass]="tipo === 'erro' ? 'aviso-erro' : 'aviso-sucesso'">
       {{ mensagem }}
+      <div class="mt-3">
+        <ng-content></ng-content>
+      </div>
     </div>
   `,
   styles: [`
