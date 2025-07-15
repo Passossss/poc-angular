@@ -3,23 +3,23 @@
   <button (click)="cancelarEdicao()">Cancelar</button>
   <button (click)="confirmarEdicao()" [disabled]="!cliente">Confirmar</button>
 </div>
-
+<div *ngIf="erroForm" class="erro-form">{{ erroForm }}</div>
 <form *ngIf="cliente">
   <div class="form-campos">
     <label>Nome:
-      <input [(ngModel)]="cliente.nome" name="nome">
+      <input [(ngModel)]="cliente.nome" name="nome" required>
     </label>
     <label>Data de Nascimento:
-      <input [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date">
+      <input [(ngModel)]="cliente.dataNascimento" name="dataNascimento" type="date" required>
     </label>
     <label>Email:
-      <input [(ngModel)]="cliente.email" name="email">
+      <input [(ngModel)]="cliente.email" name="email" required>
     </label>
     <label>Telefone:
-      <input [(ngModel)]="cliente.telefone" name="telefone">
+      <input [(ngModel)]="cliente.telefone" name="telefone" (ngModelChange)="cliente.telefone = formatarTelefone(cliente.telefone)" required>
     </label>
     <label>CPF:
-      <input [(ngModel)]="cliente.cpf" name="cpf">
+      <input [(ngModel)]="cliente.cpf" name="cpf" (ngModelChange)="cliente.cpf = formatarCPF(cliente.cpf)" required maxlength="14">
     </label>
   </div>
 </form>

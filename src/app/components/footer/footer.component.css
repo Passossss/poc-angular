@@ -1,7 +1,5 @@
 .footer-fixo {
-  position: fixed;
   left: 0;
-  bottom: 0;
   width: 100vw;
   background: #3acbdb;
   color: #fff;
@@ -10,6 +8,8 @@
   z-index: 100;
   border: none;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  position: fixed;
+  bottom: 0;
 }
 
 body, html {

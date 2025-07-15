@@ -26,7 +26,7 @@ export class ListaPedidos {
 
   deletarPedido(pedido: Pedido): void {
     if (confirm('Tem certeza que deseja deletar este pedido?')) {
-      this.pedidoService.DeletePedidoAsync(pedido.id, pedido.clienteId).subscribe({
+      this.pedidoService.DeletePedidoAsync(pedido.id).subscribe({
         next: () => {
           alert('Pedido deletado com sucesso!');
           this.carregarPedidos();

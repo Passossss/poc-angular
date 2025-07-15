@@ -10,3 +10,9 @@ body, html {
   display: flex;
   flex-direction: column;
 }
+
+.espc {
+  flex: 1 0 auto;
+  padding-top: 80px;
+  padding-bottom: 60px;
+}

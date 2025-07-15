@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class ListaEditar {
   cliente: Cliente | null = null;
   public temId = false;
+  public erroForm = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -29,7 +30,10 @@ export class ListaEditar {
     if (id) {
       this.clienteService.GetClienteByIdAsync(id).subscribe({
         next: (cliente: Cliente) => {
-          this.cliente = cliente;
+          this.cliente = {
+            ...cliente,
+            dataNascimento: cliente.dataNascimento ? cliente.dataNascimento.substring(0, 10) : ''
+          };
         },
         error: (err: any) => {
           console.error('Erro ao carregar cliente:', err);
@@ -48,14 +52,49 @@ export class ListaEditar {
     }
   }
 
+  validarForm(): boolean {
+    this.erroForm = '';
+    if (!this.cliente) return false;
+    if (!this.cliente.nome) { this.erroForm = 'Informe o nome.'; return false; }
+    if (!this.cliente.dataNascimento) { this.erroForm = 'Informe a data de nascimento.'; return false; }
+    if (new Date(this.cliente.dataNascimento) > new Date()) { this.erroForm = 'Data de nascimento não pode ser no futuro.'; return false; }
+    if (!this.cliente.email) { this.erroForm = 'Informe o email.'; return false; }
+    if (!this.cliente.telefone) { this.erroForm = 'Informe o telefone.'; return false; }
+    if (!this.cliente.cpf) { this.erroForm = 'Informe o CPF.'; return false; }
+    return true;
+  }
+
+  formatarCPF(cpf: string): string {
+    cpf = cpf.replace(/\D/g, '');
+    if (cpf.length <= 11) {
+      cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+      cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+      cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    return cpf;
+  }
+
+  formatarTelefone(telefone: string): string {
+    telefone = telefone.replace(/\D/g, '');
+    if (telefone.length > 10) {
+      telefone = telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (telefone.length > 5) {
+      telefone = telefone.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if (telefone.length > 2) {
+      telefone = telefone.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+    }
+    return telefone;
+  }
+
   confirmarEdicao(): void {
+    if (!this.validarForm()) return;
     if (this.cliente) {
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
         this.clienteService.UpdateClienteAsync(this.cliente).subscribe({
           next: () => {
             alert('Cliente atualizado com sucesso!');
-            this.router.navigate(['/']);
+            this.router.navigate(['/clientes']);
           },
           error: (err: any) => {
             alert('Erro ao atualizar cliente!');
@@ -66,7 +105,7 @@ export class ListaEditar {
         this.clienteService.CreateClienteAsync(this.cliente).subscribe({
           next: () => {
             alert('Cliente criado com sucesso!');
-            this.router.navigate(['/']);
+            this.router.navigate(['/clientes']);
           },
           error: (err: any) => {
             alert('Erro ao criar cliente!');
