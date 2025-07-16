@@ -69,9 +69,8 @@ export class ListaEditar {
 
   validarForm(): boolean {
     if (!this.cliente) return false;
-    if (this.deleteConfirmClienteId) return false; // Bloqueia validação se aguardando confirmação de exclusão
+    if (this.deleteConfirmClienteId) return false;
 
-    // Verificar campos
     if (!this.cliente.nome || /\d/.test(this.cliente.nome)) {
       this.avisoMsg = 'Nome inválido: não pode conter números.';
       this.avisoTipo = 'erro';
@@ -141,7 +140,7 @@ export class ListaEditar {
   }
 
   confirmarEdicao(): void {
-    if (this.deleteConfirmClienteId) return; // Bloqueia edição se aguardando confirmação de exclusão
+    if (this.deleteConfirmClienteId) return;
     if (!this.validarForm()) return;
     if (!this.cliente) return;
     const clienteEnviar = {
